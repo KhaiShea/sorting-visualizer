@@ -6,6 +6,8 @@ let cancelRequested = false;
 let soundEnabled = true;
 let barCount = 40;
 let delay = 50;
+let rainbowMode = false; // Track rainbow mode state
+let staticColors = []; // Store static colors for the shuffled array
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let lastToneTime = 0;
@@ -35,6 +37,61 @@ function toggleSound() {
   soundEnabled = !soundEnabled;
   const btn = document.getElementById("sound-toggle");
   btn.textContent = soundEnabled ? "🔊 Sound: On" : "🔇 Sound: Off";
+}
+
+function toggleRainbowMode() {
+  rainbowMode = !rainbowMode;
+  const btn = document.getElementById("rainbow-toggle");
+  btn.textContent = rainbowMode ? "🌈 Rainbow: On" : "🌈 Rainbow: Off";
+  shuffleArray(); // Re-shuffle to apply static colors
+}
+
+function assignStaticColors() {
+  staticColors = generateSoftGradientColors(array.length); // Use pastel gradient for shuffled array
+}
+
+function applyStaticColors() {
+  const bars = document.getElementsByClassName("bar");
+  for (let i = 0; i < bars.length; i++) {
+    bars[i].style.backgroundColor = staticColors[i];
+  }
+}
+
+function applySoftGradient() {
+  // Reuse staticColors for the completed array to ensure consistency
+  applyStaticColors();
+}
+
+function generateSoftGradientColors(count) {
+  const colors = [];
+  for (let i = 0; i < count; i++) {
+    const hue = (i / count) * 360;
+    colors.push(`hsl(${hue}, 70%, 70%)`); // Softer gradient with lower saturation and higher lightness
+  }
+  return colors;
+}
+
+function generateRainbowColors(count) {
+  const colors = [];
+  for (let i = 0; i < count; i++) {
+    const hue = (i / count) * 360;
+    colors.push(`hsl(${hue}, 100%, 50%)`);
+  }
+  return colors;
+}
+
+function shuffleArrayColors(colors) {
+  return colors
+    .map(color => ({ color, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ color }) => color);
+}
+
+function isSorted(arr) {
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] < arr[i - 1]) return false;
+  }
+  return true;
 }
 
 function updateStepCounter() {
@@ -79,7 +136,7 @@ function cancelSort() {
 function disableButtons() {
   document.querySelectorAll("button").forEach(btn => {
     const id = btn.id;
-    if (!["stopBtn", "sound-toggle"].includes(id)) btn.disabled = true;
+    if (!["stopBtn", "sound-toggle", "rainbow-toggle"].includes(id)) btn.disabled = true;
   });
 }
 
@@ -92,6 +149,7 @@ function resetBarColors() {
   for (let bar of bars) bar.style.backgroundColor = "teal";
 }
 
+// Modify generateBars to apply static colors if rainbow mode is enabled
 function generateBars() {
   const container = document.getElementById("bar-container");
   container.innerHTML = "";
@@ -101,14 +159,17 @@ function generateBars() {
     bar.style.height = `${height}px`;
     container.appendChild(bar);
   });
+  if (rainbowMode) applyStaticColors();
 }
 
+// Modify shuffleArray to assign pastel colors
 function shuffleArray() {
   array = Array.from({ length: barCount }, () => Math.floor(Math.random() * 300) + 50);
   steps = 0;
   updateStepCounter();
   document.getElementById("timer").textContent = "Time: 0.0s";
   cancelRequested = false;
+  assignStaticColors(); // Assign pastel colors during shuffle
   generateBars();
 }
 
@@ -118,14 +179,43 @@ function showCompletePopup() {
   setTimeout(() => popup.classList.remove("show"), 3000);
 }
 
+function playCelebrationSound() {
+  if (!soundEnabled) return;
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // High-pitched tone
+  gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1); // Fade out
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + 1); // Play for 1 second
+}
+
+// Modify celebrate to apply the soft gradient after sorting
 async function celebrate() {
   const bars = document.getElementsByClassName("bar");
+
+  // Step 1: Turn all bars to the default color (teal)
   for (let i = 0; i < bars.length; i++) {
-    if (cancelRequested) return;
-    bars[i].style.backgroundColor = "limegreen";
-    playTone(array[i], 30);
-    await new Promise(resolve => setTimeout(resolve, 15));
+    bars[i].style.backgroundColor = "teal";
   }
+
+  // Step 2: Wait briefly before starting the rainbow reveal
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  // Step 3: Traverse the array and play tones for each bar
+  for (let i = 0; i < bars.length; i++) {
+    if (cancelRequested) return; // Stop if sorting is canceled
+    playTone(array[i], 50); // Play tone for the current bar
+    bars[i].style.backgroundColor = rainbowMode
+      ? generateSoftGradientColors(array.length)[i] // Apply rainbow gradient if enabled
+      : "limegreen"; // Default color for sorted bars
+    await new Promise(resolve => setTimeout(resolve, 15)); // Delay for smooth traversal
+  }
+
+  // Step 4: Show the "Sorting Complete" popup
   showCompletePopup();
   enableButtons();
 }
@@ -663,6 +753,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("shuffleBtn").addEventListener("click", shuffleArray);
   document.getElementById("stopBtn").addEventListener("click", cancelSort);
   document.getElementById("sound-toggle").addEventListener("click", toggleSound);
+  document.getElementById("rainbow-toggle").addEventListener("click", toggleRainbowMode);
   document.getElementById("algorithmSelect").addEventListener("change", (e) => {
     const selectedAlgorithm = e.target.value;
     updateSliderForAlgorithm(selectedAlgorithm);

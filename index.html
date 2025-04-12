@@ -72,6 +72,11 @@
   <div id="complete-popup">✅ Sorting Complete!</div>
   <div id="slider-popup" class="popup">⚠️ Slider updated to match algorithm requirements!</div>
 
+  <!-- Move the Rainbow toggle button here -->
+  <div id="rainbow-container">
+    <button id="rainbow-toggle">🌈 Rainbow: Off</button>
+  </div>
+
   <script src="script.js"></script>
   
   <script>
@@ -86,6 +91,8 @@
       const isLight = document.body.classList.toggle('light');
       localStorage.setItem("theme", isLight ? "light" : "dark");
     });
+
+    document.getElementById("rainbow-toggle").addEventListener("click", toggleRainbowMode);
   </script>
 
 </body>

@@ -34,7 +34,7 @@ button {
 .bar {
   background-color: #00bcd4;
   width: 10px;
-  transition: height 0.2s ease;
+  transition: height 0.2s ease, background-color 0.5s ease; /* Smooth color transition */
 }
 
 #complete-popup {
@@ -164,4 +164,25 @@ body.light #complexity-table td {
 
 #controls {
   margin-top: 1.5rem;
+}
+
+#rainbow-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+#rainbow-toggle {
+  margin-top: 0;
+  background-color: #ff69b4;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease;
+}
+
+#rainbow-toggle:hover {
+  background-color: #ff1493;
 }
