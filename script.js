@@ -18,7 +18,7 @@ function playTone(value, duration = 50) {
   const oscillator = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
 
-  oscillator.type = 'triangle'; // soft blip
+  oscillator.type = 'triangle';
   oscillator.frequency.value = 300 + value * 0.5;
 
   gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
@@ -78,7 +78,14 @@ function shuffleArray() {
   generateBars();
 }
 
-// 🎉 Final animation + sound after sort completes
+// 🎉 Success message popup
+function showCompletePopup() {
+  const popup = document.getElementById("complete-popup");
+  popup.classList.add("show");
+  setTimeout(() => popup.classList.remove("show"), 3000);
+}
+
+// 🎉 Final animation + sound
 async function celebrate() {
   const bars = document.getElementsByClassName("bar");
   for (let i = 0; i < bars.length; i++) {
@@ -87,6 +94,7 @@ async function celebrate() {
     playTone(array[i], 30);
     await new Promise(resolve => setTimeout(resolve, 15));
   }
+  showCompletePopup();
 }
 
 async function bubbleSort() {
