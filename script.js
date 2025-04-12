@@ -3,6 +3,39 @@ let steps = 0;
 let startTime = null;
 let timerInterval = null;
 let cancelRequested = false;
+let soundEnabled = true;
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let lastToneTime = 0;
+
+function playTone(value, duration = 50) {
+  if (!soundEnabled || cancelRequested) return;
+
+  const now = Date.now();
+  if (now - lastToneTime < 30) return;
+  lastToneTime = now;
+
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  oscillator.type = 'triangle'; // softer "blip"
+  oscillator.frequency.value = 300 + value * 0.5; // pitch mapped to bar height
+
+  gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration / 1000);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + duration / 1000);
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById("sound-toggle");
+  btn.textContent = soundEnabled ? "🔊 Sound: On" : "🔇 Sound: Off";
+}
 
 function updateStepCounter() {
   document.getElementById("step-counter").textContent = `Steps: ${steps}`;
@@ -66,6 +99,7 @@ async function bubbleSort() {
         steps++;
         updateStepCounter();
         generateBars();
+        playTone(array[j]); // Only on swap
       }
 
       bars[j].style.backgroundColor = "teal";
@@ -106,6 +140,7 @@ async function insertionSort() {
     steps++;
     updateStepCounter();
     generateBars();
+    playTone(array[j + 1]); // Only on insert
     for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
   }
 
@@ -148,8 +183,10 @@ async function partition(start, end) {
       updateStepCounter();
       pivotIndex++;
       generateBars();
+      playTone(array[pivotIndex]); // Only on swap
       await new Promise(resolve => setTimeout(resolve, 50));
     }
+
     bars[i].style.backgroundColor = "teal";
   }
 
@@ -157,6 +194,7 @@ async function partition(start, end) {
   steps++;
   updateStepCounter();
   generateBars();
+  playTone(array[pivotIndex]); // Only on final pivot swap
   await new Promise(resolve => setTimeout(resolve, 50));
   bars[end].style.backgroundColor = "teal";
 
