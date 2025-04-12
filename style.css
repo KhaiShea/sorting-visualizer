@@ -6,6 +6,9 @@ body {
   color: #ffffff;
   text-align: center;
   padding: 1rem;
+  max-width: 1200px; /* Restrict the maximum width */
+  margin: 0 auto; /* Center the content */
+  padding: 1rem; /* Add padding for spacing */
 }
 
 button {
@@ -37,44 +40,62 @@ button {
   transition: height 0.2s ease, background-color 0.5s ease; /* Smooth color transition */
 }
 
-#complete-popup {
+.popup {
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #28a745;
-  color: white;
   font-weight: bold;
   padding: 12px 25px;
   border-radius: 10px;
   font-size: 16px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease, transform 0.3s ease; /* Add smooth transform transition */
   z-index: 1000;
 }
-#complete-popup.show {
+
+.popup.show {
   opacity: 1;
+  transform: translateX(-50%) translateY(-5px); /* Slight upward animation when visible */
+}
+
+#complete-popup {
+  position: fixed;
+  bottom: 30px; /* Slightly above the bottom */
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+  background-color: #28a745; /* Green background */
+  color: white;
+  font-weight: bold;
+  text-align: center; /* Center the text */
+  padding: 10px 20px; /* Add padding for spacing */
+  border-radius: 10px; /* Rounded corners */
+  opacity: 0; /* Default to hidden */
+  pointer-events: none; /* Prevent interaction when hidden */
+  transition: opacity 0.5s ease, transform 0.3s ease; /* Smooth fade-in/out and slight movement */
+  z-index: 1000;
+  display: inline-block; /* Width adjusts to text content */
+  max-width: 90%; /* Prevent it from being too wide on smaller screens */
+  word-wrap: break-word; /* Handle long text gracefully */
+}
+
+#complete-popup.show {
+  opacity: 1; /* Visible when the .show class is applied */
+  transform: translateX(-50%) translateY(-5px); /* Slight upward animation */
 }
 
 #slider-popup {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
   background-color: #ffc107;
   color: #1a1a1a;
-  font-weight: bold;
-  padding: 12px 25px;
-  border-radius: 10px;
-  font-size: 16px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease;
-  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Add spacing between icon and text */
 }
-#slider-popup.show {
-  opacity: 1;
+
+#slider-popup::before {
+  content: "⚠️"; /* Add warning icon */
+  font-size: 18px;
 }
 
 #complexity-table {
@@ -121,9 +142,9 @@ body.light .bar {
 }
 
 body.light button {
-  background-color: #f8f8f8;
+  background-color: #dddbdb; /* Slightly darker background color */
   color: #1a1a1a;
-  border: 1px solid #ccc;
+  /* Remove border */
 }
 
 #bar-container {
@@ -185,4 +206,20 @@ body.light #complexity-table td {
 
 #rainbow-toggle:hover {
   background-color: #ff1493;
+}
+
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+footer a {
+  color: #00bcd4;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
