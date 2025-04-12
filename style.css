@@ -77,6 +77,35 @@ button {
   opacity: 1;
 }
 
+#complexity-table {
+  margin: 1rem auto;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+#complexity-table table {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+#complexity-table th, #complexity-table td {
+  border: 1px solid #444;
+  padding: 0.5rem;
+}
+
+#complexity-table th {
+  background-color: #333;
+  color: #fff;
+}
+
+#complexity-table td {
+  background-color: #222;
+  color: #fff;
+}
+
 /* Light Mode Overrides */
 body.light {
   background-color: #ffffff;
@@ -113,4 +142,26 @@ body.light button {
 
 body.light #bar-container {
   background-color: #f4f4f4;
+}
+
+body.light #complexity-table th {
+  background-color: #f4f4f4;
+  color: #1a1a1a;
+}
+
+body.light #complexity-table td {
+  background-color: #fff;
+  color: #1a1a1a;
+}
+
+#algorithm-controls {
+  margin-top: 1rem;
+}
+
+#sliders {
+  margin-top: 1rem;
+}
+
+#controls {
+  margin-top: 1.5rem;
 }

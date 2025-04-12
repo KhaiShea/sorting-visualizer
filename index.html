@@ -46,6 +46,24 @@
     <button onclick="shuffleArray()" id="shuffleBtn">🔀 Shuffle</button>
     <button onclick="cancelSort()" id="stopBtn">⏹️ Stop</button>
     <button onclick="toggleSound()" id="sound-toggle">🔊 Sound: On</button>
+    <div id="complexity-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Algorithm</th>
+            <th>Time Complexity</th>
+            <th>Space Complexity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="algo-name">Bubble Sort</td>
+            <td id="time-complexity">O(n²)</td>
+            <td id="space-complexity">O(1)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <p id="step-counter">Steps: 0</p>
     <p id="timer">Time: 0.0s</p>
   </div>

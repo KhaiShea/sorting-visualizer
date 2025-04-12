@@ -589,6 +589,32 @@ async function shellSort() {
   }
 }
 
+const complexities = {
+  bubble: { name: "Bubble Sort", time: "O(n²)", space: "O(1)" },
+  insertion: { name: "Insertion Sort", time: "O(n²)", space: "O(1)" },
+  selection: { name: "Selection Sort", time: "O(n²)", space: "O(1)" },
+  merge: { name: "Merge Sort", time: "O(n log n)", space: "O(n)" },
+  quick: { name: "Quick Sort", time: "O(n log n)", space: "O(log n)" },
+  heap: { name: "Heap Sort", time: "O(n log n)", space: "O(1)" },
+  counting: { name: "Counting Sort", time: "O(n + k)", space: "O(k)" },
+  radix: { name: "Radix Sort", time: "O(nk)", space: "O(n + k)" },
+  bucket: { name: "Bucket Sort", time: "O(n + k)", space: "O(n + k)" },
+  shell: { name: "Shell Sort", time: "O(n log² n)", space: "O(1)" },
+};
+
+function updateComplexityTable(algorithm) {
+  const algoName = document.getElementById("algo-name");
+  const timeComplexity = document.getElementById("time-complexity");
+  const spaceComplexity = document.getElementById("space-complexity");
+
+  const complexity = complexities[algorithm];
+  if (complexity) {
+    algoName.textContent = complexity.name;
+    timeComplexity.textContent = complexity.time;
+    spaceComplexity.textContent = complexity.space;
+  }
+}
+
 function updateSliderForAlgorithm(algorithm) {
   const slider = document.getElementById("barCountSlider");
   const barCountValue = document.getElementById("barCountValue");
@@ -640,6 +666,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("algorithmSelect").addEventListener("change", (e) => {
     const selectedAlgorithm = e.target.value;
     updateSliderForAlgorithm(selectedAlgorithm);
+    updateComplexityTable(selectedAlgorithm);
   });
   shuffleArray();
 });
