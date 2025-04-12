@@ -18,8 +18,8 @@ function playTone(value, duration = 50) {
   const oscillator = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
 
-  oscillator.type = 'triangle'; // softer "blip"
-  oscillator.frequency.value = 300 + value * 0.5; // pitch mapped to bar height
+  oscillator.type = 'triangle'; // soft blip
+  oscillator.frequency.value = 300 + value * 0.5;
 
   gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
   gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration / 1000);
@@ -78,6 +78,17 @@ function shuffleArray() {
   generateBars();
 }
 
+// 🎉 Final animation + sound after sort completes
+async function celebrate() {
+  const bars = document.getElementsByClassName("bar");
+  for (let i = 0; i < bars.length; i++) {
+    if (cancelRequested) return;
+    bars[i].style.backgroundColor = "limegreen";
+    playTone(array[i], 30);
+    await new Promise(resolve => setTimeout(resolve, 15));
+  }
+}
+
 async function bubbleSort() {
   cancelRequested = false;
   steps = 0;
@@ -99,7 +110,7 @@ async function bubbleSort() {
         steps++;
         updateStepCounter();
         generateBars();
-        playTone(array[j]); // Only on swap
+        playTone(array[j]);
       }
 
       bars[j].style.backgroundColor = "teal";
@@ -108,6 +119,7 @@ async function bubbleSort() {
   }
 
   stopTimer();
+  if (!cancelRequested) await celebrate();
 }
 
 async function insertionSort() {
@@ -140,11 +152,12 @@ async function insertionSort() {
     steps++;
     updateStepCounter();
     generateBars();
-    playTone(array[j + 1]); // Only on insert
+    playTone(array[j + 1]);
     for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
   }
 
   stopTimer();
+  if (!cancelRequested) await celebrate();
 }
 
 async function quickSortWrapper() {
@@ -155,6 +168,7 @@ async function quickSortWrapper() {
   await quickSort(0, array.length - 1);
   stopTimer();
   generateBars();
+  if (!cancelRequested) await celebrate();
 }
 
 async function quickSort(start, end) {
@@ -183,7 +197,7 @@ async function partition(start, end) {
       updateStepCounter();
       pivotIndex++;
       generateBars();
-      playTone(array[pivotIndex]); // Only on swap
+      playTone(array[pivotIndex]);
       await new Promise(resolve => setTimeout(resolve, 50));
     }
 
@@ -194,7 +208,7 @@ async function partition(start, end) {
   steps++;
   updateStepCounter();
   generateBars();
-  playTone(array[pivotIndex]); // Only on final pivot swap
+  playTone(array[pivotIndex]);
   await new Promise(resolve => setTimeout(resolve, 50));
   bars[end].style.backgroundColor = "teal";
 
