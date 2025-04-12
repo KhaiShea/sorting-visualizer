@@ -33,4 +33,65 @@ async function bubbleSort() {
   }
 }
 
+async function insertionSort() {
+  const bars = document.getElementsByClassName("bar");
+  for (let i = 1; i < array.length; i++) {
+    let key = array[i];
+    let j = i - 1;
+    bars[i].style.backgroundColor = "red";
+    await new Promise(resolve => setTimeout(resolve, 50));
+    while (j >= 0 && array[j] > key) {
+      bars[j].style.backgroundColor = "yellow";
+      array[j + 1] = array[j];
+      j = j - 1;
+      generateBars();
+      await new Promise(resolve => setTimeout(resolve, 50));
+      for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
+    }
+    array[j + 1] = key;
+    generateBars();
+    for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
+  }
+}
+
+async function quickSortWrapper() {
+  await quickSort(0, array.length - 1);
+  generateBars();
+}
+
+async function quickSort(start, end) {
+  if (start >= end) return;
+
+  const index = await partition(start, end);
+  await quickSort(start, index - 1);
+  await quickSort(index + 1, end);
+}
+
+async function partition(start, end) {
+  const bars = document.getElementsByClassName("bar");
+  let pivot = array[end];
+  let pivotIndex = start;
+
+  for (let i = start; i < end; i++) {
+    bars[i].style.backgroundColor = "red";
+    bars[end].style.backgroundColor = "purple";
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    if (array[i] < pivot) {
+      [array[i], array[pivotIndex]] = [array[pivotIndex], array[i]];
+      pivotIndex++;
+      generateBars();
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    bars[i].style.backgroundColor = "teal";
+  }
+
+  [array[pivotIndex], array[end]] = [array[end], array[pivotIndex]];
+  generateBars();
+  await new Promise(resolve => setTimeout(resolve, 50));
+  bars[end].style.backgroundColor = "teal";
+
+  return pivotIndex;
+}
+
 shuffleArray();
