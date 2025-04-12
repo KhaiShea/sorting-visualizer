@@ -402,6 +402,216 @@ async function heapify(n, i) {
   }
 }
 
+// Counting Sort
+async function countingSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await countingSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function countingSort() {
+  const max = Math.max(...array);
+  const count = new Array(max + 1).fill(0);
+  const output = new Array(array.length);
+  const bars = document.getElementsByClassName("bar");
+
+  for (let i = 0; i < array.length; i++) {
+    count[array[i]]++;
+    steps++;
+    updateStepCounter();
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  for (let i = 1; i < count.length; i++) {
+    count[i] += count[i - 1];
+  }
+
+  for (let i = array.length - 1; i >= 0; i--) {
+    output[count[array[i]] - 1] = array[i];
+    count[array[i]]--;
+    steps++;
+    updateStepCounter();
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  for (let i = 0; i < array.length; i++) {
+    array[i] = output[i];
+    generateBars();
+    playTone(array[i]);
+    bars[i].style.backgroundColor = "limegreen";
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+}
+
+// Radix Sort
+async function radixSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await radixSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function radixSort() {
+  const max = Math.max(...array);
+  for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
+    await countingSortByDigit(exp);
+  }
+}
+
+async function countingSortByDigit(exp) {
+  const output = new Array(array.length).fill(0);
+  const count = new Array(10).fill(0);
+  const bars = document.getElementsByClassName("bar");
+
+  for (let i = 0; i < array.length; i++) {
+    const digit = Math.floor(array[i] / exp) % 10;
+    count[digit]++;
+    steps++;
+    updateStepCounter();
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  for (let i = 1; i < count.length; i++) {
+    count[i] += count[i - 1];
+  }
+
+  for (let i = array.length - 1; i >= 0; i--) {
+    const digit = Math.floor(array[i] / exp) % 10;
+    output[count[digit] - 1] = array[i];
+    count[digit]--;
+    steps++;
+    updateStepCounter();
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  for (let i = 0; i < array.length; i++) {
+    array[i] = output[i];
+    generateBars();
+    playTone(array[i]);
+    bars[i].style.backgroundColor = "limegreen";
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+}
+
+// Bucket Sort
+async function bucketSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await bucketSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function bucketSort() {
+  const max = Math.max(...array);
+  if (max === 0) return; // Handle edge case where all elements are 0
+
+  const buckets = Array.from({ length: 10 }, () => []);
+  const bars = document.getElementsByClassName("bar");
+
+  for (let i = 0; i < array.length; i++) {
+    const index = Math.floor((array[i] / max) * (buckets.length - 1)); // Ensure index is within bounds
+    buckets[index].push(array[i]);
+    steps++;
+    updateStepCounter();
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  for (let i = 0; i < buckets.length; i++) {
+    buckets[i].sort((a, b) => a - b);
+  }
+
+  let idx = 0;
+  for (let i = 0; i < buckets.length; i++) {
+    for (let j = 0; j < buckets[i].length; j++) {
+      array[idx++] = buckets[i][j];
+      generateBars();
+      playTone(array[idx - 1]);
+      bars[idx - 1].style.backgroundColor = "limegreen";
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
+// Shell Sort
+async function shellSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await shellSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function shellSort() {
+  const bars = document.getElementsByClassName("bar");
+  for (let gap = Math.floor(array.length / 2); gap > 0; gap = Math.floor(gap / 2)) {
+    for (let i = gap; i < array.length; i++) {
+      const temp = array[i];
+      let j;
+      for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+        array[j] = array[j - gap];
+        steps++;
+        updateStepCounter();
+        generateBars();
+        playTone(array[j]);
+        bars[j].style.backgroundColor = "red";
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+      array[j] = temp;
+      generateBars();
+      playTone(array[j]);
+      bars[j].style.backgroundColor = "limegreen";
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
+function updateSliderForAlgorithm(algorithm) {
+  const slider = document.getElementById("barCountSlider");
+  const barCountValue = document.getElementById("barCountValue");
+  const popup = document.getElementById("slider-popup");
+
+  let maxItems = 150; // Default max items
+  if (["counting", "radix", "bucket"].includes(algorithm)) {
+    maxItems = 100; // Example: These algorithms work better with fewer items
+  }
+
+  if (slider.max != maxItems) {
+    slider.max = maxItems;
+    if (barCount > maxItems) {
+      barCount = maxItems;
+      slider.value = maxItems;
+      barCountValue.textContent = maxItems;
+      shuffleArray();
+    }
+    popup.classList.add("show");
+    setTimeout(() => popup.classList.remove("show"), 3000);
+  }
+}
+
 // Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("barCountSlider").addEventListener("input", (e) => {
@@ -419,9 +629,17 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (selected === "merge") mergeSortWrapper();
     else if (selected === "quick") quickSortWrapper();
     else if (selected === "heap") heapSortWrapper();
+    else if (selected === "counting") countingSortWrapper();
+    else if (selected === "radix") radixSortWrapper();
+    else if (selected === "bucket") bucketSortWrapper();
+    else if (selected === "shell") shellSortWrapper();
   });
   document.getElementById("shuffleBtn").addEventListener("click", shuffleArray);
   document.getElementById("stopBtn").addEventListener("click", cancelSort);
   document.getElementById("sound-toggle").addEventListener("click", toggleSound);
+  document.getElementById("algorithmSelect").addEventListener("change", (e) => {
+    const selectedAlgorithm = e.target.value;
+    updateSliderForAlgorithm(selectedAlgorithm);
+  });
   shuffleArray();
 });
