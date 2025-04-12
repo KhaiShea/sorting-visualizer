@@ -30,7 +30,7 @@ button:hover {
   background-color: #555;
 }
 
-#step-counter {
+#step-counter, #timer {
   margin-top: 10px;
   font-size: 18px;
   font-weight: bold;
