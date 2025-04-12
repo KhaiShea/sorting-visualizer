@@ -753,7 +753,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("shuffleBtn").addEventListener("click", shuffleArray);
   document.getElementById("stopBtn").addEventListener("click", cancelSort);
   document.getElementById("sound-toggle").addEventListener("click", toggleSound);
-  document.getElementById("rainbow-toggle").addEventListener("click", toggleRainbowMode);
+  document.getElementById("rainbow-toggle").addEventListener("click", toggleRainbowMode); // Ensure this line is present
   document.getElementById("algorithmSelect").addEventListener("change", (e) => {
     const selectedAlgorithm = e.target.value;
     updateSliderForAlgorithm(selectedAlgorithm);
