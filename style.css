@@ -1,0 +1,21 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    background-color: #f5f5f5;
+  }
+  
+  #bar-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 400px;
+    margin: 20px auto;
+    width: 80%;
+  }
+  
+  .bar {
+    width: 20px;
+    margin: 0 2px;
+    background-color: teal;
+  }
+  
