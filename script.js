@@ -1,4 +1,9 @@
 let array = [];
+let steps = 0;
+
+function updateStepCounter() {
+  document.getElementById("step-counter").textContent = `Steps: ${steps}`;
+}
 
 function generateBars() {
   const container = document.getElementById("bar-container");
@@ -13,6 +18,8 @@ function generateBars() {
 
 function shuffleArray() {
   array = Array.from({ length: 40 }, () => Math.floor(Math.random() * 300) + 50);
+  steps = 0;
+  updateStepCounter();
   generateBars();
 }
 
@@ -23,10 +30,14 @@ async function bubbleSort() {
       bars[j].style.backgroundColor = "red";
       bars[j + 1].style.backgroundColor = "red";
       await new Promise(resolve => setTimeout(resolve, 50));
+
       if (array[j] > array[j + 1]) {
         [array[j], array[j + 1]] = [array[j + 1], array[j]];
+        steps++;
+        updateStepCounter();
         generateBars();
       }
+
       bars[j].style.backgroundColor = "teal";
       bars[j + 1].style.backgroundColor = "teal";
     }
@@ -40,21 +51,28 @@ async function insertionSort() {
     let j = i - 1;
     bars[i].style.backgroundColor = "red";
     await new Promise(resolve => setTimeout(resolve, 50));
+
     while (j >= 0 && array[j] > key) {
-      bars[j].style.backgroundColor = "yellow";
       array[j + 1] = array[j];
+      steps++;
+      updateStepCounter();
       j = j - 1;
       generateBars();
       await new Promise(resolve => setTimeout(resolve, 50));
       for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
     }
+
     array[j + 1] = key;
+    steps++;
+    updateStepCounter();
     generateBars();
     for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
   }
 }
 
 async function quickSortWrapper() {
+  steps = 0;
+  updateStepCounter();
   await quickSort(0, array.length - 1);
   generateBars();
 }
@@ -79,6 +97,8 @@ async function partition(start, end) {
 
     if (array[i] < pivot) {
       [array[i], array[pivotIndex]] = [array[pivotIndex], array[i]];
+      steps++;
+      updateStepCounter();
       pivotIndex++;
       generateBars();
       await new Promise(resolve => setTimeout(resolve, 50));
@@ -87,6 +107,8 @@ async function partition(start, end) {
   }
 
   [array[pivotIndex], array[end]] = [array[end], array[pivotIndex]];
+  steps++;
+  updateStepCounter();
   generateBars();
   await new Promise(resolve => setTimeout(resolve, 50));
   bars[end].style.backgroundColor = "teal";

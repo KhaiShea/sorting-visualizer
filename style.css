@@ -30,6 +30,12 @@ button:hover {
   background-color: #555;
 }
 
+#step-counter {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
 #bar-container {
   display: flex;
   align-items: flex-end;
