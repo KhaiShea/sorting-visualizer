@@ -281,3 +281,31 @@ async function partition(start, end) {
 }
 
 shuffleArray();
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("barCountSlider").addEventListener("input", (e) => {
+    barCount = parseInt(e.target.value);
+    document.getElementById("barCountValue").textContent = e.target.value;
+    shuffleArray();
+  });
+
+  document.getElementById("speedSlider").addEventListener("input", (e) => {
+    delay = parseInt(e.target.value);
+    document.getElementById("speedValue").textContent = e.target.value;
+  });
+
+  document.getElementById("runBtn").addEventListener("click", () => {
+    const selected = document.getElementById("algorithmSelect").value;
+    if (selected === "bubble") bubbleSort();
+    else if (selected === "insertion") insertionSort();
+    else if (selected === "selection") selectionSort();
+    else if (selected === "merge") mergeSortWrapper();
+    else if (selected === "quick") quickSortWrapper();
+    else if (selected === "heap") heapSort();
+    else alert("Selected algorithm not implemented.");
+  });
+
+  shuffleArray(); // Initial bars
+});

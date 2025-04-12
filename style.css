@@ -1,91 +1,97 @@
+
+/* Base (Dark Mode Default) */
 body {
-  font-family: monospace;
-  background-color: #1e1e1e;
-  color: white;
   margin: 0;
-  padding: 20px;
+  font-family: monospace;
+  background-color: #121212;
+  color: #ffffff;
   text-align: center;
-}
-
-h1 {
-  margin-bottom: 10px;
-}
-
-#controls {
-  margin: 20px auto;
+  padding: 1rem;
 }
 
 button {
-  margin: 5px;
-  padding: 10px 20px;
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #555;
-}
-
-#step-counter, #timer {
-  margin-top: 10px;
-  font-size: 18px;
+  margin: 0.25rem;
+  padding: 0.5rem 1rem;
   font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #333;
+  color: #fff;
 }
 
 #bar-container {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  height: 400px;
-  width: 100%;
-  margin-top: 30px;
+  height: 300px;
+  margin-top: 2rem;
+  background: #222;
+  padding: 1rem;
+  border-radius: 8px;
   gap: 2px;
 }
 
 .bar {
-  background-color: teal;
-  width: 15px;
-  transition: height 0.2s ease, background-color 0.2s ease;
+  background-color: #00bcd4;
+  width: 10px;
+  transition: height 0.2s ease;
 }
 
-/* ✅ Sorting Complete Popup */
 #complete-popup {
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #2ecc71;
-  color: #fff;
+  background-color: #28a745;
+  color: white;
   font-weight: bold;
-  padding: 15px 30px;
-  border-radius: 12px;
-  font-size: 18px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-size: 16px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease;
   z-index: 1000;
 }
-
 #complete-popup.show {
   opacity: 1;
 }
 
-#sliders {
-  margin-bottom: 20px;
+/* Light Mode Overrides */
+body.light {
+  background-color: #ffffff;
+  color: #1a1a1a;
 }
 
-#sliders label {
-  display: inline-block;
-  margin: 0 15px;
-  color: white;
-  font-size: 14px;
+body.light #bar-container {
+  background-color: #f4f4f4;
 }
 
-input[type="range"] {
-  vertical-align: middle;
+body.light .bar {
+  background-color: #007bff;
+}
+
+body.light button {
+  background-color: #f8f8f8;
+  color: #1a1a1a;
+  border: 1px solid #ccc;
+}
+
+#bar-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 300px;
+  height: 50vh; /* Responsive to screen height */
+  max-height: 70vh;
+  margin: 2rem auto;
+  background: #222;
+  padding: 1rem;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+body.light #bar-container {
+  background-color: #f4f4f4;
 }

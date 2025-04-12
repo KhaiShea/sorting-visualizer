@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,27 +7,40 @@
   <title>Sorting Visualizer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body onclick="resumeAudio()">
-  <h1>Sorting Algorithm Visualizer</h1>
+<body>
+  <header>
+    <h1>Sorting Algorithm Visualizer</h1>
+    <button id="theme-toggle">🌓 Toggle Theme</button>
+  </header>
+
+  <div id="algorithm-controls">
+    <label for="algorithmSelect">Choose Algorithm:</label>
+    <select id="algorithmSelect">
+      <option value="bubble">Bubble Sort</option>
+      <option value="insertion">Insertion Sort</option>
+      <option value="selection">Selection Sort</option>
+      <option value="merge">Merge Sort</option>
+      <option value="quick">Quick Sort</option>
+      <option value="heap">Heap Sort</option>
+    </select>
+    <button id="runBtn">▶️ Run</button>
+  </div>
 
   <div id="sliders">
     <label>
       Number of Items:
-      <input type="range" min="10" max="150" value="40" id="barCountSlider" oninput="updateBarCount(this.value)">
+      <input type="range" min="10" max="150" value="40" id="barCountSlider">
       <span id="barCountValue">40</span>
     </label>
     <label>
       Access Latency (ms):
-      <input type="range" min="5" max="300" value="50" id="speedSlider" oninput="updateSpeed(this.value)">
+      <input type="range" min="5" max="300" value="50" id="speedSlider">
       <span id="speedValue">50</span>
     </label>
   </div>
 
   <div id="controls">
-    <button onclick="shuffleArray()" id="shuffleBtn">Shuffle</button>
-    <button onclick="bubbleSort()" id="bubbleBtn">Bubble Sort</button>
-    <button onclick="insertionSort()" id="insertionBtn">Insertion Sort</button>
-    <button onclick="quickSortWrapper()" id="quickBtn">Quick Sort</button>
+    <button onclick="shuffleArray()" id="shuffleBtn">🔀 Shuffle</button>
     <button onclick="cancelSort()" id="stopBtn">⏹️ Stop</button>
     <button onclick="toggleSound()" id="sound-toggle">🔊 Sound: On</button>
     <p id="step-counter">Steps: 0</p>
@@ -37,5 +51,20 @@
   <div id="complete-popup">✅ Sorting Complete!</div>
 
   <script src="script.js"></script>
+  
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const saved = localStorage.getItem("theme");
+      if (saved === "light") {
+        document.body.classList.add("light");
+      }
+    });
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light');
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+    });
+  </script>
+
 </body>
 </html>
