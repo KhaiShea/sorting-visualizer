@@ -6,21 +6,34 @@
   <title>Sorting Visualizer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body onclick="resumeAudio()">
   <h1>Sorting Algorithm Visualizer</h1>
+
+  <div id="sliders">
+    <label>
+      Number of Items:
+      <input type="range" min="10" max="150" value="40" id="barCountSlider" oninput="updateBarCount(this.value)">
+      <span id="barCountValue">40</span>
+    </label>
+    <label>
+      Access Latency (ms):
+      <input type="range" min="5" max="300" value="50" id="speedSlider" oninput="updateSpeed(this.value)">
+      <span id="speedValue">50</span>
+    </label>
+  </div>
+
   <div id="controls">
-    <button onclick="shuffleArray()">Shuffle</button>
-    <button onclick="bubbleSort()">Bubble Sort</button>
-    <button onclick="insertionSort()">Insertion Sort</button>
-    <button onclick="quickSortWrapper()">Quick Sort</button>
-    <button onclick="cancelSort()">Reset Sort</button>
+    <button onclick="shuffleArray()" id="shuffleBtn">Shuffle</button>
+    <button onclick="bubbleSort()" id="bubbleBtn">Bubble Sort</button>
+    <button onclick="insertionSort()" id="insertionBtn">Insertion Sort</button>
+    <button onclick="quickSortWrapper()" id="quickBtn">Quick Sort</button>
+    <button onclick="cancelSort()" id="stopBtn">⏹️ Stop</button>
     <button onclick="toggleSound()" id="sound-toggle">🔊 Sound: On</button>
     <p id="step-counter">Steps: 0</p>
     <p id="timer">Time: 0.0s</p>
   </div>
-  <div id="bar-container"></div>
 
-  <!-- Completion popup -->
+  <div id="bar-container"></div>
   <div id="complete-popup">✅ Sorting Complete!</div>
 
   <script src="script.js"></script>

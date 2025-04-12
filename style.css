@@ -74,3 +74,18 @@ button:hover {
 #complete-popup.show {
   opacity: 1;
 }
+
+#sliders {
+  margin-bottom: 20px;
+}
+
+#sliders label {
+  display: inline-block;
+  margin: 0 15px;
+  color: white;
+  font-size: 14px;
+}
+
+input[type="range"] {
+  vertical-align: middle;
+}

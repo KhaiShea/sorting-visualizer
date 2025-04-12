@@ -4,9 +4,17 @@ let startTime = null;
 let timerInterval = null;
 let cancelRequested = false;
 let soundEnabled = true;
+let barCount = 40;
+let delay = 50;
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let lastToneTime = 0;
+
+function resumeAudio() {
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+}
 
 function playTone(value, duration = 50) {
   if (!soundEnabled || cancelRequested) return;
@@ -41,6 +49,17 @@ function updateStepCounter() {
   document.getElementById("step-counter").textContent = `Steps: ${steps}`;
 }
 
+function updateBarCount(value) {
+  barCount = parseInt(value);
+  document.getElementById("barCountValue").textContent = value;
+  shuffleArray();
+}
+
+function updateSpeed(value) {
+  delay = parseInt(value);
+  document.getElementById("speedValue").textContent = value;
+}
+
 function startTimer() {
   startTime = Date.now();
   timerInterval = setInterval(() => {
@@ -56,6 +75,38 @@ function stopTimer() {
 function cancelSort() {
   cancelRequested = true;
   stopTimer();
+  steps = 0;
+  updateStepCounter();
+  document.getElementById("timer").textContent = "Time: 0.0s";
+  enableButtons();
+
+  // Wait briefly to ensure current sort exits before shuffle
+  setTimeout(() => {
+    if (cancelRequested) {
+      shuffleArray();
+    }
+  }, delay + 10);
+}
+
+function disableButtons() {
+  document.querySelectorAll("button").forEach(btn => {
+    const id = btn.id;
+    // Only disable sort/shuffle buttons — leave "stop" and "sound" active
+    if (!["stopBtn", "sound-toggle"].includes(id)) {
+      btn.disabled = true;
+    }
+  });
+}
+
+function enableButtons() {
+  document.querySelectorAll("button").forEach(btn => btn.disabled = false);
+}
+
+function resetBarColors() {
+  const bars = document.getElementsByClassName("bar");
+  for (let bar of bars) {
+    bar.style.backgroundColor = "teal";
+  }
 }
 
 function generateBars() {
@@ -70,7 +121,7 @@ function generateBars() {
 }
 
 function shuffleArray() {
-  array = Array.from({ length: 40 }, () => Math.floor(Math.random() * 300) + 50);
+  array = Array.from({ length: barCount }, () => Math.floor(Math.random() * 300) + 50);
   steps = 0;
   updateStepCounter();
   document.getElementById("timer").textContent = "Time: 0.0s";
@@ -78,14 +129,12 @@ function shuffleArray() {
   generateBars();
 }
 
-// 🎉 Success message popup
 function showCompletePopup() {
   const popup = document.getElementById("complete-popup");
   popup.classList.add("show");
   setTimeout(() => popup.classList.remove("show"), 3000);
 }
 
-// 🎉 Final animation + sound
 async function celebrate() {
   const bars = document.getElementsByClassName("bar");
   for (let i = 0; i < bars.length; i++) {
@@ -95,6 +144,7 @@ async function celebrate() {
     await new Promise(resolve => setTimeout(resolve, 15));
   }
   showCompletePopup();
+  enableButtons();
 }
 
 async function bubbleSort() {
@@ -102,6 +152,8 @@ async function bubbleSort() {
   steps = 0;
   updateStepCounter();
   startTimer();
+  disableButtons();
+  resetBarColors();
 
   const bars = document.getElementsByClassName("bar");
 
@@ -111,7 +163,7 @@ async function bubbleSort() {
 
       bars[j].style.backgroundColor = "red";
       bars[j + 1].style.backgroundColor = "red";
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => setTimeout(resolve, delay));
 
       if (array[j] > array[j + 1]) {
         [array[j], array[j + 1]] = [array[j + 1], array[j]];
@@ -135,6 +187,8 @@ async function insertionSort() {
   steps = 0;
   updateStepCounter();
   startTimer();
+  disableButtons();
+  resetBarColors();
 
   const bars = document.getElementsByClassName("bar");
 
@@ -142,7 +196,7 @@ async function insertionSort() {
     let key = array[i];
     let j = i - 1;
     bars[i].style.backgroundColor = "red";
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, delay));
 
     while (j >= 0 && array[j] > key) {
       if (cancelRequested) return stopTimer();
@@ -152,7 +206,7 @@ async function insertionSort() {
       updateStepCounter();
       j = j - 1;
       generateBars();
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => setTimeout(resolve, delay));
       for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
     }
 
@@ -161,7 +215,6 @@ async function insertionSort() {
     updateStepCounter();
     generateBars();
     playTone(array[j + 1]);
-    for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
   }
 
   stopTimer();
@@ -173,7 +226,11 @@ async function quickSortWrapper() {
   steps = 0;
   updateStepCounter();
   startTimer();
+  disableButtons();
+  resetBarColors();
+
   await quickSort(0, array.length - 1);
+
   stopTimer();
   generateBars();
   if (!cancelRequested) await celebrate();
@@ -197,7 +254,7 @@ async function partition(start, end) {
 
     bars[i].style.backgroundColor = "red";
     bars[end].style.backgroundColor = "purple";
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise(resolve => setTimeout(resolve, delay));
 
     if (array[i] < pivot) {
       [array[i], array[pivotIndex]] = [array[pivotIndex], array[i]];
@@ -206,7 +263,7 @@ async function partition(start, end) {
       pivotIndex++;
       generateBars();
       playTone(array[pivotIndex]);
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
 
     bars[i].style.backgroundColor = "teal";
@@ -217,7 +274,7 @@ async function partition(start, end) {
   updateStepCounter();
   generateBars();
   playTone(array[pivotIndex]);
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, delay));
   bars[end].style.backgroundColor = "teal";
 
   return pivotIndex;
