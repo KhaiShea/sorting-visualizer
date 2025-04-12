@@ -11,30 +11,22 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let lastToneTime = 0;
 
 function resumeAudio() {
-  if (audioCtx.state === "suspended") {
-    audioCtx.resume();
-  }
+  if (audioCtx.state === "suspended") audioCtx.resume();
 }
 
 function playTone(value, duration = 50) {
   if (!soundEnabled || cancelRequested) return;
-
   const now = Date.now();
   if (now - lastToneTime < 30) return;
   lastToneTime = now;
-
   const oscillator = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
-
   oscillator.type = 'triangle';
   oscillator.frequency.value = 300 + value * 0.5;
-
   gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
   gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration / 1000);
-
   oscillator.connect(gainNode);
   gainNode.connect(audioCtx.destination);
-
   oscillator.start();
   oscillator.stop(audioCtx.currentTime + duration / 1000);
 }
@@ -79,22 +71,15 @@ function cancelSort() {
   updateStepCounter();
   document.getElementById("timer").textContent = "Time: 0.0s";
   enableButtons();
-
-  // Wait briefly to ensure current sort exits before shuffle
   setTimeout(() => {
-    if (cancelRequested) {
-      shuffleArray();
-    }
+    if (cancelRequested) shuffleArray();
   }, delay + 10);
 }
 
 function disableButtons() {
   document.querySelectorAll("button").forEach(btn => {
     const id = btn.id;
-    // Only disable sort/shuffle buttons — leave "stop" and "sound" active
-    if (!["stopBtn", "sound-toggle"].includes(id)) {
-      btn.disabled = true;
-    }
+    if (!["stopBtn", "sound-toggle"].includes(id)) btn.disabled = true;
   });
 }
 
@@ -104,9 +89,7 @@ function enableButtons() {
 
 function resetBarColors() {
   const bars = document.getElementsByClassName("bar");
-  for (let bar of bars) {
-    bar.style.backgroundColor = "teal";
-  }
+  for (let bar of bars) bar.style.backgroundColor = "teal";
 }
 
 function generateBars() {
@@ -147,6 +130,7 @@ async function celebrate() {
   enableButtons();
 }
 
+// Bubble Sort
 async function bubbleSort() {
   cancelRequested = false;
   steps = 0;
@@ -154,17 +138,13 @@ async function bubbleSort() {
   startTimer();
   disableButtons();
   resetBarColors();
-
   const bars = document.getElementsByClassName("bar");
-
   for (let i = 0; i < array.length; i++) {
     for (let j = 0; j < array.length - i - 1; j++) {
       if (cancelRequested) return stopTimer();
-
       bars[j].style.backgroundColor = "red";
       bars[j + 1].style.backgroundColor = "red";
       await new Promise(resolve => setTimeout(resolve, delay));
-
       if (array[j] > array[j + 1]) {
         [array[j], array[j + 1]] = [array[j + 1], array[j]];
         steps++;
@@ -172,16 +152,15 @@ async function bubbleSort() {
         generateBars();
         playTone(array[j]);
       }
-
       bars[j].style.backgroundColor = "teal";
       bars[j + 1].style.backgroundColor = "teal";
     }
   }
-
   stopTimer();
   if (!cancelRequested) await celebrate();
 }
 
+// Insertion Sort
 async function insertionSort() {
   cancelRequested = false;
   steps = 0;
@@ -189,18 +168,14 @@ async function insertionSort() {
   startTimer();
   disableButtons();
   resetBarColors();
-
   const bars = document.getElementsByClassName("bar");
-
   for (let i = 1; i < array.length; i++) {
     let key = array[i];
     let j = i - 1;
     bars[i].style.backgroundColor = "red";
     await new Promise(resolve => setTimeout(resolve, delay));
-
     while (j >= 0 && array[j] > key) {
       if (cancelRequested) return stopTimer();
-
       array[j + 1] = array[j];
       steps++;
       updateStepCounter();
@@ -209,18 +184,108 @@ async function insertionSort() {
       await new Promise(resolve => setTimeout(resolve, delay));
       for (let k = 0; k <= i; k++) bars[k].style.backgroundColor = "teal";
     }
-
     array[j + 1] = key;
     steps++;
     updateStepCounter();
     generateBars();
     playTone(array[j + 1]);
   }
-
   stopTimer();
   if (!cancelRequested) await celebrate();
 }
 
+// Selection Sort
+async function selectionSort() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  const bars = document.getElementsByClassName("bar");
+  for (let i = 0; i < array.length; i++) {
+    let minIndex = i;
+    for (let j = i + 1; j < array.length; j++) {
+      if (cancelRequested) return stopTimer();
+      bars[j].style.backgroundColor = "red";
+      bars[minIndex].style.backgroundColor = "blue";
+      await new Promise(resolve => setTimeout(resolve, delay));
+      if (array[j] < array[minIndex]) {
+        bars[minIndex].style.backgroundColor = "teal";
+        minIndex = j;
+      } else {
+        bars[j].style.backgroundColor = "teal";
+      }
+    }
+    if (minIndex !== i) {
+      [array[i], array[minIndex]] = [array[minIndex], array[i]];
+      steps++;
+      updateStepCounter();
+      generateBars();
+      playTone(array[i]);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      bars[minIndex].style.backgroundColor = "teal";
+    }
+    bars[i].style.backgroundColor = "teal";
+  }
+  stopTimer();
+  if (!cancelRequested) await celebrate();
+}
+
+// Merge Sort
+async function mergeSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await mergeSort(0, array.length - 1);
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function mergeSort(left, right) {
+  if (left >= right || cancelRequested) return;
+  const mid = Math.floor((left + right) / 2);
+  await mergeSort(left, mid);
+  await mergeSort(mid + 1, right);
+  await merge(left, mid, right);
+}
+
+async function merge(left, mid, right) {
+  const leftArr = array.slice(left, mid + 1);
+  const rightArr = array.slice(mid + 1, right + 1);
+  let i = 0, j = 0, k = left;
+  while (i < leftArr.length && j < rightArr.length) {
+    if (cancelRequested) return;
+    array[k++] = leftArr[i] <= rightArr[j] ? leftArr[i++] : rightArr[j++];
+    steps++;
+    updateStepCounter();
+    generateBars();
+    playTone(array[k - 1]);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  while (i < leftArr.length) {
+    array[k++] = leftArr[i++];
+    steps++;
+    updateStepCounter();
+    generateBars();
+    playTone(array[k - 1]);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  while (j < rightArr.length) {
+    array[k++] = rightArr[j++];
+    steps++;
+    updateStepCounter();
+    generateBars();
+    playTone(array[k - 1]);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+}
+
+// Quick Sort
 async function quickSortWrapper() {
   cancelRequested = false;
   steps = 0;
@@ -228,84 +293,135 @@ async function quickSortWrapper() {
   startTimer();
   disableButtons();
   resetBarColors();
-
   await quickSort(0, array.length - 1);
-
   stopTimer();
   generateBars();
   if (!cancelRequested) await celebrate();
 }
 
-async function quickSort(start, end) {
-  if (start >= end || cancelRequested) return;
-
-  const index = await partition(start, end);
-  await quickSort(start, index - 1);
-  await quickSort(index + 1, end);
+async function quickSort(low, high) {
+  if (low < high && !cancelRequested) {
+    const pivotIndex = await partition(low, high);
+    await quickSort(low, pivotIndex - 1);
+    await quickSort(pivotIndex + 1, high);
+  }
 }
 
-async function partition(start, end) {
+async function partition(low, high) {
+  const pivot = array[high];
   const bars = document.getElementsByClassName("bar");
-  let pivot = array[end];
-  let pivotIndex = start;
-
-  for (let i = start; i < end; i++) {
+  let i = low - 1;
+  bars[high].style.backgroundColor = "yellow";
+  for (let j = low; j < high; j++) {
     if (cancelRequested) return;
-
-    bars[i].style.backgroundColor = "red";
-    bars[end].style.backgroundColor = "purple";
+    bars[j].style.backgroundColor = "red";
     await new Promise(resolve => setTimeout(resolve, delay));
-
-    if (array[i] < pivot) {
-      [array[i], array[pivotIndex]] = [array[pivotIndex], array[i]];
+    if (array[j] < pivot) {
+      i++;
+      [array[i], array[j]] = [array[j], array[i]];
       steps++;
       updateStepCounter();
-      pivotIndex++;
       generateBars();
-      playTone(array[pivotIndex]);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      playTone(array[i]);
     }
-
-    bars[i].style.backgroundColor = "teal";
+    bars[j].style.backgroundColor = "teal";
   }
-
-  [array[pivotIndex], array[end]] = [array[end], array[pivotIndex]];
+  [array[i + 1], array[high]] = [array[high], array[i + 1]];
   steps++;
   updateStepCounter();
   generateBars();
-  playTone(array[pivotIndex]);
-  await new Promise(resolve => setTimeout(resolve, delay));
-  bars[end].style.backgroundColor = "teal";
-
-  return pivotIndex;
+  playTone(array[i + 1]);
+  bars[high].style.backgroundColor = "teal";
+  return i + 1;
 }
 
-shuffleArray();
+// Heap Sort
+async function heapSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await heapSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
 
+async function heapSort() {
+  const n = array.length;
+  const bars = document.getElementsByClassName("bar");
 
+  // Build max heap
+  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+    await heapify(n, i);
+  }
 
+  // Extract elements from heap
+  for (let i = n - 1; i > 0; i--) {
+    if (cancelRequested) return;
+    [array[0], array[i]] = [array[i], array[0]];
+    steps++;
+    updateStepCounter();
+    generateBars();
+    playTone(array[i]);
+    bars[i].style.backgroundColor = "limegreen";
+    await new Promise(resolve => setTimeout(resolve, delay));
+    await heapify(i, 0);
+  }
+  bars[0].style.backgroundColor = "limegreen";
+}
+
+async function heapify(n, i) {
+  const bars = document.getElementsByClassName("bar");
+  let largest = i;
+  const left = 2 * i + 1;
+  const right = 2 * i + 2;
+
+  if (left < n && array[left] > array[largest]) {
+    largest = left;
+  }
+
+  if (right < n && array[right] > array[largest]) {
+    largest = right;
+  }
+
+  if (largest !== i) {
+    [array[i], array[largest]] = [array[largest], array[i]];
+    steps++;
+    updateStepCounter();
+    generateBars();
+    playTone(array[i]);
+    bars[i].style.backgroundColor = "red";
+    bars[largest].style.backgroundColor = "red";
+    await new Promise(resolve => setTimeout(resolve, delay));
+    bars[i].style.backgroundColor = "teal";
+    bars[largest].style.backgroundColor = "teal";
+    await heapify(n, largest);
+  }
+}
+
+// Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("barCountSlider").addEventListener("input", (e) => {
-    barCount = parseInt(e.target.value);
-    document.getElementById("barCountValue").textContent = e.target.value;
-    shuffleArray();
+    updateBarCount(e.target.value);
   });
-
   document.getElementById("speedSlider").addEventListener("input", (e) => {
-    delay = parseInt(e.target.value);
-    document.getElementById("speedValue").textContent = e.target.value;
+    updateSpeed(e.target.value);
   });
-
   document.getElementById("runBtn").addEventListener("click", () => {
     const selected = document.getElementById("algorithmSelect").value;
+    resumeAudio();
     if (selected === "bubble") bubbleSort();
     else if (selected === "insertion") insertionSort();
     else if (selected === "selection") selectionSort();
     else if (selected === "merge") mergeSortWrapper();
     else if (selected === "quick") quickSortWrapper();
-    else if (selected === "heap") heapSort();
-    else alert("Selected algorithm not implemented.");
+    else if (selected === "heap") heapSortWrapper();
   });
-
-  shuffleArray(); // Initial bars
+  document.getElementById("shuffleBtn").addEventListener("click", shuffleArray);
+  document.getElementById("stopBtn").addEventListener("click", cancelSort);
+  document.getElementById("sound-toggle").addEventListener("click", toggleSound);
+  shuffleArray();
 });
