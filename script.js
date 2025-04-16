@@ -708,6 +708,104 @@ async function bogoSort() {
   }
 }
 
+// Cocktail Shaker Sort
+async function cocktailShakerSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await cocktailShakerSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function cocktailShakerSort() {
+  let start = 0, end = array.length - 1;
+  const bars = document.getElementsByClassName("bar");
+  while (start < end) {
+    for (let i = start; i < end; i++) {
+      if (cancelRequested) return;
+      bars[i].style.backgroundColor = "red";
+      bars[i + 1].style.backgroundColor = "red";
+      await new Promise(resolve => setTimeout(resolve, delay));
+      if (array[i] > array[i + 1]) {
+        [array[i], array[i + 1]] = [array[i + 1], array[i]];
+        steps++;
+        updateStepCounter();
+        generateBars();
+        playTone(array[i]);
+      }
+      bars[i].style.backgroundColor = "teal";
+      bars[i + 1].style.backgroundColor = "teal";
+    }
+    end--;
+    for (let i = end; i > start; i--) {
+      if (cancelRequested) return;
+      bars[i].style.backgroundColor = "red";
+      bars[i - 1].style.backgroundColor = "red";
+      await new Promise(resolve => setTimeout(resolve, delay));
+      if (array[i] < array[i - 1]) {
+        [array[i], array[i - 1]] = [array[i - 1], array[i]];
+        steps++;
+        updateStepCounter();
+        generateBars();
+        playTone(array[i]);
+      }
+      bars[i].style.backgroundColor = "teal";
+      bars[i - 1].style.backgroundColor = "teal";
+    }
+    start++;
+  }
+}
+
+// Comb Sort
+async function combSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await combSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function combSort() {
+  let gap = array.length;
+  const shrink = 1.3;
+  const bars = document.getElementsByClassName("bar");
+  let sorted = false;
+
+  while (!sorted) {
+    gap = Math.floor(gap / shrink);
+    if (gap <= 1) {
+      gap = 1;
+      sorted = true;
+    }
+    for (let i = 0; i + gap < array.length; i++) {
+      if (cancelRequested) return;
+      bars[i].style.backgroundColor = "red";
+      bars[i + gap].style.backgroundColor = "red";
+      await new Promise(resolve => setTimeout(resolve, delay));
+      if (array[i] > array[i + gap]) {
+        [array[i], array[i + gap]] = [array[i + gap], array[i]];
+        steps++;
+        updateStepCounter();
+        generateBars();
+        playTone(array[i]);
+        sorted = false;
+      }
+      bars[i].style.backgroundColor = "teal";
+      bars[i + gap].style.backgroundColor = "teal";
+    }
+  }
+}
+
 // Update complexities object
 const complexities = {
   bubble: { name: "Bubble Sort", time: "O(n²)", space: "O(1)" },
@@ -721,6 +819,8 @@ const complexities = {
   bucket: { name: "Bucket Sort", time: "O(n + k)", space: "O(n + k)" },
   shell: { name: "Shell Sort", time: "O(n log² n)", space: "O(1)" },
   bogo: { name: "Bogo Sort", time: "O((n+1)!)", space: "O(1)" },
+  cocktail: { name: "Cocktail Shaker Sort", time: "O(n²)", space: "O(1)" },
+  comb: { name: "Comb Sort", time: "O(n²)", space: "O(1)" },
 };
 
 function updateComplexityTable(algorithm) {
@@ -780,7 +880,9 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (selected === "radix") radixSortWrapper();
     else if (selected === "bucket") bucketSortWrapper();
     else if (selected === "shell") shellSortWrapper();
-    else if (selected === "bogo") bogoSortWrapper(); // Add Bogo Sort
+    else if (selected === "bogo") bogoSortWrapper();
+    else if (selected === "cocktail") cocktailShakerSortWrapper(); // Add Cocktail Shaker Sort
+    else if (selected === "comb") combSortWrapper(); // Add Comb Sort
   });
   document.getElementById("shuffleBtn").addEventListener("click", shuffleArray);
   document.getElementById("stopBtn").addEventListener("click", cancelSort);
