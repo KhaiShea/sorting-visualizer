@@ -679,6 +679,36 @@ async function shellSort() {
   }
 }
 
+// Bogo Sort
+async function bogoSortWrapper() {
+  cancelRequested = false;
+  steps = 0;
+  updateStepCounter();
+  startTimer();
+  disableButtons();
+  resetBarColors();
+  await bogoSort();
+  stopTimer();
+  generateBars();
+  if (!cancelRequested) await celebrate();
+}
+
+async function bogoSort() {
+  const bars = document.getElementsByClassName("bar");
+  while (!isSorted(array)) {
+    if (cancelRequested) return;
+    array = shuffleArrayColors(array); // Shuffle the array
+    steps++;
+    updateStepCounter();
+    generateBars();
+    for (let i = 0; i < bars.length; i++) {
+      bars[i].style.backgroundColor = "teal";
+    }
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+}
+
+// Update complexities object
 const complexities = {
   bubble: { name: "Bubble Sort", time: "O(n²)", space: "O(1)" },
   insertion: { name: "Insertion Sort", time: "O(n²)", space: "O(1)" },
@@ -690,6 +720,7 @@ const complexities = {
   radix: { name: "Radix Sort", time: "O(nk)", space: "O(n + k)" },
   bucket: { name: "Bucket Sort", time: "O(n + k)", space: "O(n + k)" },
   shell: { name: "Shell Sort", time: "O(n log² n)", space: "O(1)" },
+  bogo: { name: "Bogo Sort", time: "O((n+1)!)", space: "O(1)" },
 };
 
 function updateComplexityTable(algorithm) {
@@ -749,6 +780,7 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (selected === "radix") radixSortWrapper();
     else if (selected === "bucket") bucketSortWrapper();
     else if (selected === "shell") shellSortWrapper();
+    else if (selected === "bogo") bogoSortWrapper(); // Add Bogo Sort
   });
   document.getElementById("shuffleBtn").addEventListener("click", shuffleArray);
   document.getElementById("stopBtn").addEventListener("click", cancelSort);
