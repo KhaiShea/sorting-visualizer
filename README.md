@@ -21,6 +21,9 @@ Try it out here: [Sorting Visualizer](https://khaishea.github.io/sorting-visuali
   - Radix Sort
   - Bucket Sort
   - Shell Sort
+  - Cocktail Shaker Sort
+  - Comb Sort
+  - Bogo Sort
 - **Customizable Settings**:
   - Adjust the number of items in the array.
   - Control the sorting speed.
@@ -99,6 +102,21 @@ Try it out here: [Sorting Visualizer](https://khaishea.github.io/sorting-visuali
 - **Space Complexity**: O(1)
 - Sorts elements at specific intervals, reducing the interval with each pass.
 
+### 11. **Cocktail Shaker Sort**
+- **Time Complexity**: O(n²)
+- **Space Complexity**: O(1)
+- A variation of Bubble Sort that sorts in both directions.
+
+### 12. **Comb Sort**
+- **Time Complexity**: O(n²)
+- **Space Complexity**: O(1)
+- Improves Bubble Sort by using a gap to compare elements.
+
+### 13. **Bogo Sort**
+- **Time Complexity**: O((n+1)!)
+- **Space Complexity**: O(1)
+- Randomly shuffles the array until it is sorted.
+
 ---
 
 ## Development
@@ -124,7 +142,7 @@ Try it out here: [Sorting Visualizer](https://khaishea.github.io/sorting-visuali
 
 This project is licensed under the **GNU Affero General Public License (AGPL)**.  
 You are free to use, modify, and distribute this project, provided that any modifications or derivative works are also licensed under the AGPL.  
-For more details, see the [LICENSE](https://www.gnu.org/licenses/agpl-3.0.en.html) file.
+For more details, see the [LICENSE](LICENSE) file.
 
 ---
 
